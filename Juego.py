@@ -1,97 +1,112 @@
-import pygame
-from pygame.locals import *
+import pygame #nos permite importar la libreria de Pygame 
 
 pygame.init()
 
-screen_width = 600
-screen_height = 600
+#tamaños que tendrá la pantalla
+eje_x = 400
+eje_y = 400
 
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption('Breakout')
+#método para definir el tamaño de la pantalla 
+ventana = pygame.display.set_mode ((eje_x, eje_y))
 
-#define colours
-bg = (234, 218, 184)
-#block colours
-block_red = (242, 85, 96)
-block_green = (86, 174, 87)
-block_blue = (69, 177, 232)
+pygame.display.set_caption ("Breaking Meta Space") #nombre de la pantalla
+
+#códigos de colores que utilizaremos
+
+color_fondo = (0,0,0)
+nivel1 = (126, 232, 150)
+nivel2 = (255, 158, 62)
+nivel3 = (255, 62, 62)
+  
+#numero de bloques que aparecerán
+
+verticales = 5
+horizontales = 8
 
 
-#define game variables
-cols = 6
-rows = 6
 
-
-
-#brick wall class
-class wall():
+#clase para crear los rectangulos (obstaculos) del juego
+class Obstaculos():
     def __init__(self):
-        self.width = screen_width // cols
-        self.height = 50
+        self.x = eje_x // horizontales
+        self.y = 50
 
-    def create_wall(self):
-        self.blocks = []
-        #define an empty list for an individual block
-        block_individual = []
-        for row in range(rows):
-            #reset the block row list
-            block_row = []
-            #iterate through each column in that row
-            for col in range(cols):
-                #generate x and y positions for each block and create a rectangle from that
-                block_x = col * self.width
-                block_y = row * self.height
-                rect = pygame.Rect(block_x, block_y, self.width, self.height)
-                #assign block strength based on row
-                if row < 2:
-                    strength = 3
-                elif row < 4:
-                    strength = 2
-                elif row < 6:
-                    strength = 1
-                #create a list at this point to store the rect and colour data
-                block_individual = [rect, strength]
-                #append that individual block to the block row
-                block_row.append(block_individual)
-            #append the row to the full list of blocks
-            self.blocks.append(block_row)
+           
+    def crear_obstaculos (self):
+      
+      self.bloques = []      
+      #vamos a guardar los bloques dentro de una lista vacia 
+        
+      grupo_de_bloques = []
+       
+      for i in range (horizontales):
+        
+        bloques = []
+
+        for j in range(verticales):
+
+          #se define la posición en x y en y de los rectangulos para crear cada obstaculo. 
+
+          bloque_x = verticales * self.y
+          bloque_y = horizontales * self.x
+          
+          rect = pygame.Rect ((bloque_x, bloque_y, self.x, self.y))
+
+          #dependiendo de la fila en la que se encuentre el bloque el valor o la reaccion va a ser diferente
+
+          if verticales <= 1:
+            valor = 3
+          elif verticales <= 3:
+            valor = 2
+          elif verticales <= 5:
+            valor = 1
+
+          #en la primera lista vacia que creamos vamos a almacenar cada tipo de bloque, con los atributos rectangulo (obstaculo) y valor (color)
+
+          grupo_de_bloques = [rect, valor]
+          
+          #agregar los bloques al grupo de bloques para compilar todos los obstaculos
+          bloques.append (grupo_de_bloques)
+
+          print (bloques)
+          
+      self.bloques.append(grupo_de_bloques)
+      
+
+    def dibujar_obstaculos (self):
+      color_bloque = (0,0,0)
+
+      for verticales in self.bloques:
+        for bloque in verticales:
+          #asignarle un color a cada bloque 
+
+          if bloque [1] == 3:
+            color_bloque = nivel3
+
+          elif bloque [1] == 2:
+            color_bloque = nivel2
+              
+          elif bloque [1] == 1:
+            color_bloque = nivel1
+                      
+          pygame.draw.rect(ventana, color_bloque, self.bloques [0])
+                  
+          pygame.draw.rect(ventana, color_fondo , (bloque [0]))
 
 
-    def draw_wall(self):
-        for row in self.blocks:
-            for block in row:
-                #assign a colour based on block strength
-                if block[1] == 3:
-                    block_col = block_blue
-                elif block[1] == 2:
-                    block_col = block_green
-                elif block[1] == 1:
-                    block_col = block_red
-                pygame.draw.rect(screen, block_col, block[0])
-                pygame.draw.rect(screen, bg, (block[0]), 2)
+tablero = Obstaculos ()
+tablero.crear_obstaculos()
 
 
-
-#create a wall
-wall = wall()
-wall.create_wall()
-
-
-
-run = True
-while run:
-
-    screen.fill(bg)
-
-    #draw wall
-    wall.draw_wall()
-
+while True:
+    ventana.fill(color_fondo)
+    
+    tablero.dibujar_obstaculos()
 
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
+      if event.type == pygame.QUIT:
+        break
 
-
-    pygame.display.update()
-
+    pygame.display.update() 
+    
 pygame.quit()
